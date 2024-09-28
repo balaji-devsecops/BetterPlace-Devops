@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - nginx
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        command: ["/bin/sh"]
+        args: [ "-c", "envsubst < /usr/share/nginx/html/index.html.template > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'" ]
+        volumeMounts:
+          - name: html-volume
+            mountPath: /usr/share/nginx/html/index.html.template
+            subPath: index.html.template
+      volumes:
+        - name: html-volume
+          configMap:
+            name: nginx-template
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-template
+data:
+  index.html.template: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Pod Information</title>
+    </head>
+    <body>
+      <h1>Pod Information</h1>
+      <p>Pod Name: ${MY_POD_NAME}</p>
+      <p>Node Name: ${MY_NODE_NAME}</p>
+      <p>Pod Namespace: ${MY_POD_NAMESPACE}</p>
+      <p>Pod IP: ${MY_POD_IP}</p>
+    </body>
+    </html>
