@@ -1,0 +1,84 @@
+Summary:
+
+This Kubernetes Deployment, along with its associated ConfigMap, creates a scalable NGINX service that serves dynamic HTML content reflecting the pod's metadata.
+The configuration ensures that three replicas of the NGINX pod are running, while the anti-affinity rules distribute pods across different nodes to enhance reliability and availability.
+
+###############################################################################################################
+Deployment:
+##############################################################################################################
+apiVersion:
+
+apps/v1 - Specifies the API version for the Deployment resource.
+kind:
+
+Deployment - Indicates the type of Kubernetes resource.
+metadata:
+
+name: nginx-deployment - The name of the Deployment.
+spec:
+
+Describes the desired state of the Deployment.
+replicas:
+3 - Number of pod replicas to ensure high availability.
+
+selector:
+Identifies the pods managed by this Deployment using the label app: nginx.
+
+template:
+Defines the pod template.
+metadata:
+Labels to identify the pod.
+
+spec:
+affinity:
+Configures anti-affinity rules to ensure pods do not co-locate on the same node.
+
+containers:
+name:
+nginx - The name of the container.
+image:
+nginx - The Docker image to use.
+
+ports:
+Exposes port 80 for HTTP traffic.
+
+env:
+Environment variables that are populated with pod metadata.
+command:
+Custom command to run within the container to serve dynamic content.
+
+volumeMounts:
+Mounts a ConfigMap as a file inside the container.
+###########################################################################################################
+ConfigMap Configuration
+###########################################################################################################
+
+apiVersion:
+
+v1 - Specifies the API version for the ConfigMap resource.
+kind:
+
+ConfigMap - Indicates the type of resource.
+metadata:
+
+name: nginx-template - The name of the ConfigMap.
+data:
+
+Contains a key index.html.template that holds the HTML content for serving dynamic pod information.
+
+
+##############################################################################################################
+Service
+##############################################################################################################
+
+A LoadBalancer service in Kubernetes exposes your application to external traffic. It automatically provisions an external load balancer that routes traffic to the pods in your service, ensuring high availability and reliability.
+
+The LoadBalancer service configuration provided above sets up an external load balancer that routes HTTP traffic to an NGINX application running in your Kubernetes cluster. This setup is ideal for production environments, allowing users to access the application via a single, external IP address. When you create this service, the cloud provider (if supported) will automatically provision the load balancer and configure it to direct traffic to the NGINX pods.
+
+###############################################################################################################
+Automation
+###############################################################################################################
+
+To automate the creation of an Amazon EKS cluster and application deployments using pipelines, we can utilize CI/CD tools like GitHub Actions, GitLab CI/CD, or Jenkins.
+Integrating Ingress and Istio with your Amazon EKS setup enhances security, traffic management, and observability for your applications.
+
