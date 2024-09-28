@@ -1,15 +1,20 @@
-region         = "us-east-1"
-cluster_name   = "my-eks-cluster"
-cluster_version = "1.28"
-vpc_id         = "vpc-1234567890abcdef0" 
-subnets        = ["subnet-12345678", "subnet-87654321", "subnet-1a2b3c4d"]
+aws_region         = "us-east-2"
+eks_cluster_name   = "example-eks-cluster"
+eks_node_group_name = "example-eks-node-group"
+vpc_id             = "vpc-0123456789abcdef0"
+subnet_ids         = ["subnet-0123456789abcdef0", "subnet-0123456789abcdef1"]
+security_group_ids = ["sg-0123456789abcdef0", "sg-0123456789abcdef1"]
+instance_type      = "t2.small"
+desired_node_count = 3
+min_node_count     = 3
+max_node_count     = 5
 
-node_groups = {
-  eks_node_group_1 = {
-    desired_capacity = 3
-    max_capacity     = 3
-    min_capacity     = 3
-    instance_type    = "t3.medium"
-    key_name         = "my-key-pair"  ## kay pair name
-  }
-}
+# EKS Cluster version 1.28
+kubernetes_version = "1.28"
+
+coredns_version    = "v1.10.3-eks-1-28-1"
+kube_proxy_version = "v1.28.10-eks-1-28-1"
+vpc_cni_version    = "v1.12.3-eks-1-28-1"
+aws_alb_version    = "v2.5.2-eks-1-28-1"
+aws_iam_version    = "v0.2.1-eks-1-28-1"
+aws_ebs_version    = "v0.3.1-eks-1-28-1"
